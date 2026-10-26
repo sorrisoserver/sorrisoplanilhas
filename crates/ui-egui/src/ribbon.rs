@@ -213,7 +213,7 @@ fn paint_title(ui: &Ui, center: egui::Pos2, title: &str, dirty: bool, max_w: f32
 pub fn show(app: &mut SheetApp, ui: &mut Ui) {
     let t = Tokens::get(ui.ctx());
     let collapsed = app.ui.ribbon_collapsed;
-    let h = if collapsed { 34.0 } else { 34.0 + 92.0 };
+    let h = if collapsed { 34.0 } else { 34.0 + 108.0 };
     // A contextual tab exists only while its object is selected (Excel hides Table Design once the
     // cell leaves the table); a remembered one that is gone would draw an empty ribbon.
     if CONTEXTUAL_TABS.contains(&app.ui.ribbon_tab.as_str()) && !contextual_tabs(app).contains(&app.ui.ribbon_tab.as_str()) {
@@ -285,10 +285,10 @@ pub fn show(app: &mut SheetApp, ui: &mut Ui) {
             let left = ui.cursor().min.x;
             let screen = ui.ctx().content_rect();
             let fits = (screen.right() - left - (left - screen.left()).max(0.0)).max(0.0);
-            let card = Rect::from_min_size(ui.cursor().min, vec2(ui.available_width().min(fits), 88.0));
+            let card = Rect::from_min_size(ui.cursor().min, vec2(ui.available_width().min(fits), 104.0));
             ui.painter().rect_filled(card, 10.0, t.ribbon);
             ui.painter().rect_stroke(card, 10.0, Stroke::new(1.0, t.ribbon_border), StrokeKind::Inside);
-            let inner = card.shrink2(vec2(10.0, 6.0));
+            let inner = card.shrink2(vec2(10.0, 8.0));
             ui.scope_builder(egui::UiBuilder::new().max_rect(inner), |ui| {
                 // One scroll state per tab: a tab opened after scrolling another starts at its
                 // left edge, and a tab keeps its own offset while others are used.
@@ -1018,10 +1018,11 @@ fn home(app: &mut SheetApp, ui: &mut Ui) {
             let (c, ca) = split_button(ui, Icon::Currency, None, "Accounting Number Format");
             control_keytip(app, ui, &ca, "home.accounting");
             if c {
-                act(app, "home.accounting", json!({}));
+                if app.ui.language == crate::i18n::Language::PtBr { act(app, "home.numberFormat", json!({"code": ACCOUNTING_SYMBOLS[9].1})); } else { act(app, "home.accounting", json!({})); }
             }
             egui::Popup::menu(&ca).show(|ui| {
                 let mut items: Vec<_> = ACCOUNTING_SYMBOLS.iter().map(|(label, code)| (*label, "home.numberFormat", json!({"code": code}))).collect();
+                if app.ui.language == crate::i18n::Language::PtBr { let real = items.remove(9); items.insert(0, real); }
                 items.push(("-", "", json!(null)));
                 items.push(("More Accounting Formats…", "dialog:formatCells", json!({"tab": "Number"})));
                 menu_items(app, ui, &items);
@@ -1165,7 +1166,7 @@ fn home(app: &mut SheetApp, ui: &mut Ui) {
             let (s, sa) = split_button(ui, Icon::Sum, None, "AutoSum");
             control_keytip(app, ui, &sa, "formulas.autoSum");
             if s {
-                act(app, "formulas.autoSum", json!({}));
+                act(app, "formulas.autoSum", json!({"enter": false}));
             }
             egui::Popup::menu(&sa).show(|ui| autosum_menu(app, ui));
         });
@@ -1263,9 +1264,17 @@ fn home(app: &mut SheetApp, ui: &mut Ui) {
 /// The AutoSum menu (Home › Editing and Formulas › Function Library): a function, or the Insert
 /// Function dialog.
 fn autosum_menu(app: &mut SheetApp, ui: &mut Ui) {
+    // Formula-entry mode: choose first cell, type an operator (* or /), then choose
+    // the second cell. The engine commits only when Enter is pressed.
+    if ui.button(if app.ui.language == crate::i18n::Language::PtBr { "Operação personalizada (=, +, -, *, /)" } else { "Custom formula (=, +, -, *, /)" }).clicked() {
+        app.begin_edit(Some("=".to_string()), false);
+        ui.close();
+    }
+    ui.separator();
     for f in ["SUM", "AVERAGE", "COUNT", "MAX", "MIN"] {
-        if ui.button(f).clicked() {
-            act(app, "formulas.autoSum", json!({"function": f}));
+        let label = if app.ui.language == crate::i18n::Language::PtBr { match f { "SUM" => "Soma", "AVERAGE" => "Média", "COUNT" => "Contagem", "MAX" => "Máximo", _ => "Mínimo" } } else { f };
+        if ui.button(label).clicked() {
+            act(app, "formulas.autoSum", json!({"function": f, "enter": false}));
         }
     }
     ui.separator();
@@ -2035,7 +2044,7 @@ fn formulas(app: &mut SheetApp, ui: &mut Ui) {
     let (s, sa) = big_split_button(ui, Icon::Sum, "AutoSum", "AutoSum");
     control_keytip(app, ui, &sa, "formulas.autoSum");
     if s.clicked() {
-        act(app, "formulas.autoSum", json!({}));
+        act(app, "formulas.autoSum", json!({"enter": false}));
     }
     egui::Popup::menu(&sa).show(|ui| autosum_menu(app, ui));
     for (label, cat, cid) in [

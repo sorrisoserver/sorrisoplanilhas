@@ -18,7 +18,7 @@ use crate::theme::{self, Tokens};
 pub const COL_HEADER_H: f32 = 21.0;
 /// Sheet units are 96-dpi pixels (as in XLSX); on screen one unit is drawn at this many points,
 /// which matches desktop spreadsheet density (a default 20 px row is 16 pt tall).
-pub const DISPLAY_SCALE: f32 = 0.8;
+pub const DISPLAY_SCALE: f32 = 1.0;
 
 /// The zoom percentages a Ctrl+wheel notch steps between: four per doubling (about 20% apart),
 /// so 25, 50, 100, 200 and 400 are on it. Excel steps 15 points a notch instead; the status bar's
@@ -1291,6 +1291,15 @@ pub(crate) fn paint_quadrant(
         let (mut text, ncolor, numeric, fill_char) = display_text(wb, sh, c, &v, st, avail_w / z.max(0.1) * z, char_w);
         if sh.show_formulas && sh.cell(c).is_some_and(|cell| cell.formula.is_some()) {
             text = crate::formula_locale::display(&text, crate::i18n::current(p.ctx()).formula_locale(), wb, si);
+        }
+        // Localize BRL display separators without changing the workbook's numeric values
+        // or the invariant XLSX format-code representation.
+        if crate::i18n::current(p.ctx()) == crate::i18n::Language::PtBr
+            && matches!(v, Value::Number(_))
+            && (st.num_fmt.as_str().contains("R$") || st.num_fmt.as_str().contains("[$-416]"))
+            && text.contains('.')
+        {
+            text = text.replace(',', "\u{001f}").replace('.', ",").replace("\u{001f}", ".");
         }
         if text.is_empty() {
             continue;

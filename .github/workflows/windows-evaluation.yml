@@ -1,0 +1,42 @@
+name: Windows evaluation build
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out evaluation source
+        uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+      - name: Build portable Windows executable
+        run: cargo build --release --locked -p gridcraft
+      - name: Package test build and notes
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path evaluation | Out-Null
+          Copy-Item "target/release/gridcraft.exe" "evaluation/Sorriso-Server-Planilhas.exe"
+          @'
+          VERSAO DE AVALIACAO - NAO DISTRIBUIR A CLIENTES
+          Programa experimental baseado em gridcraft.
+          Crie um arquivo de teste, edite, salve, feche e reabra.
+          Verifique exportacao e textos em portugues, especialmente menus, dicas e dialogos.
+          Guarde copias dos documentos originais: formatos ainda estao em fase alpha.
+          Este executavel nao possui assinatura digital e nao inclui instalador.
+          '@ | Set-Content -Encoding UTF8 "evaluation/LEIA-ME.txt"
+      - name: Upload Windows evaluation build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sorriso-Server-Planilhas-Windows-x64-avaliacao
+          path: evaluation/
+          if-no-files-found: error
+          retention-days: 14

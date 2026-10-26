@@ -1292,6 +1292,15 @@ pub(crate) fn paint_quadrant(
         if sh.show_formulas && sh.cell(c).is_some_and(|cell| cell.formula.is_some()) {
             text = crate::formula_locale::display(&text, crate::i18n::current(p.ctx()).formula_locale(), wb, si);
         }
+        // Localize BRL display separators without changing the workbook's numeric values
+        // or the invariant XLSX format-code representation.
+        if crate::i18n::current(p.ctx()) == crate::i18n::Language::PtBr
+            && matches!(v, Value::Number(_))
+            && (st.num_fmt.as_str().contains("R$") || st.num_fmt.as_str().contains("[$-416]"))
+            && text.contains('.')
+        {
+            text = text.replace(',', "\u{001f}").replace('.', ",").replace("\u{001f}", ".");
+        }
         if text.is_empty() {
             continue;
         }

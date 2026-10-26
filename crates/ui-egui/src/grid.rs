@@ -18,7 +18,7 @@ use crate::theme::{self, Tokens};
 pub const COL_HEADER_H: f32 = 21.0;
 /// Sheet units are 96-dpi pixels (as in XLSX); on screen one unit is drawn at this many points,
 /// which matches desktop spreadsheet density (a default 20 px row is 16 pt tall).
-pub const DISPLAY_SCALE: f32 = 0.8;
+pub const DISPLAY_SCALE: f32 = 1.0;
 
 /// The zoom percentages a Ctrl+wheel notch steps between: four per doubling (about 20% apart),
 /// so 25, 50, 100, 200 and 400 are on it. Excel steps 15 points a notch instead; the status bar's

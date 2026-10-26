@@ -16,9 +16,10 @@ use crate::editor::EditState;
 use crate::theme::{self, Tokens};
 
 pub const COL_HEADER_H: f32 = 21.0;
-/// Sheet units are 96-dpi pixels (as in XLSX); on screen one unit is drawn at this many points,
-/// which matches desktop spreadsheet density (a default 20 px row is 16 pt tall).
-pub const DISPLAY_SCALE: f32 = 0.8;
+/// Sheet units are 96-dpi pixels (as in XLSX). Render a default 64 px column and
+/// 20 px row at their native on-screen size at 100% zoom, matching the spreadsheet
+/// density users expect. This changes only presentation, not XLSX row/column sizes.
+pub const DISPLAY_SCALE: f32 = 1.0;
 
 /// The zoom percentages a Ctrl+wheel notch steps between: four per doubling (about 20% apart),
 /// so 25, 50, 100, 200 and 400 are on it. Excel steps 15 points a notch instead; the status bar's
@@ -4153,6 +4154,15 @@ pub(crate) fn heading_font_size(zoom: f32) -> f32 {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn default_grid_dimensions_are_native_at_100_percent_zoom() {
+        use super::DISPLAY_SCALE;
+        use gridcraft_engine::model::{DEFAULT_COL_WIDTH, DEFAULT_ROW_HEIGHT};
+
+        assert_eq!(DEFAULT_COL_WIDTH * DISPLAY_SCALE, 64.0);
+        assert_eq!(DEFAULT_ROW_HEIGHT * DISPLAY_SCALE, 20.0);
+    }
+
 
     #[test]
     fn editor_matches_the_cell_while_the_text_fits() {

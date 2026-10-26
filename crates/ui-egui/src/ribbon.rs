@@ -1264,6 +1264,13 @@ fn home(app: &mut SheetApp, ui: &mut Ui) {
 /// The AutoSum menu (Home › Editing and Formulas › Function Library): a function, or the Insert
 /// Function dialog.
 fn autosum_menu(app: &mut SheetApp, ui: &mut Ui) {
+    // Formula-entry mode: choose first cell, type an operator (* or /), then choose
+    // the second cell. The engine commits only when Enter is pressed.
+    if ui.button(if app.ui.language == crate::i18n::Language::PtBr { "Operação personalizada (=, +, -, *, /)" } else { "Custom formula (=, +, -, *, /)" }).clicked() {
+        app.begin_edit(Some("=".to_string()), false);
+        ui.close();
+    }
+    ui.separator();
     for f in ["SUM", "AVERAGE", "COUNT", "MAX", "MIN"] {
         let label = if app.ui.language == crate::i18n::Language::PtBr { match f { "SUM" => "Soma", "AVERAGE" => "Média", "COUNT" => "Contagem", "MAX" => "Máximo", _ => "Mínimo" } } else { f };
         if ui.button(label).clicked() {

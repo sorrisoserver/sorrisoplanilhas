@@ -977,6 +977,25 @@ pub(super) fn translate(text: &str) -> Option<&'static str> {
             "Salvamento automático: salvar após cada alteração (pastas de trabalho salvas em um arquivo)"
         }
         "All sheets" => "Todas as planilhas",
+        "Can't Undo" => "Não é possível desfazer",
+        "Print…" => "Imprimir…",
+        "Export as PDF…" => "Exportar como PDF…",
+        "More Borders…" => "Mais bordas…",
+        "More Functions…" => "Mais funções…",
+        "Text that Contains…" => "Texto que contém…",
+        "A Date Occurring…" => "Uma data que ocorre…",
+        "Duplicate Values…" => "Valores duplicados…",
+        "New Rule…" => "Nova regra…",
+        "Manage Rules…" => "Gerenciar regras…",
+        "Paste Names…" => "Colar nomes…",
+        "GridCraft is fully drivable by agents. Every menu item, button and gesture is a command:" => "O GridCraft pode ser controlado por agentes. Cada menu, botão e gesto corresponde a um comando:",
+        "A clean-room, open-source, Rust-native spreadsheet. Part of ArtCraft." => "Editor de planilhas de código aberto, desenvolvido em Rust. Parte do ArtCraft.",
+        "Trust Scripts" => "Confiar nos scripts",
+        "Let this workbook's scripts run for the rest of this session" => "Permitir a execução dos scripts desta pasta de trabalho até o fim da sessão",
+        "Locking cells or hiding formulas has no effect until you protect the worksheet (Review › Protect Sheet)." => "Bloquear células ou ocultar fórmulas não terá efeito até que a planilha seja protegida (Revisão › Proteger Planilha).",
+        "Paste name" => "Colar nome",
+        "Paste List" => "Colar lista",
+        "Reports:" => "Relatórios:",
         _ => return None,
     })
 }

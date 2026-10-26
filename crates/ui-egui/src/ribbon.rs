@@ -213,7 +213,7 @@ fn paint_title(ui: &Ui, center: egui::Pos2, title: &str, dirty: bool, max_w: f32
 pub fn show(app: &mut SheetApp, ui: &mut Ui) {
     let t = Tokens::get(ui.ctx());
     let collapsed = app.ui.ribbon_collapsed;
-    let h = if collapsed { 34.0 } else { 34.0 + 92.0 };
+    let h = if collapsed { 34.0 } else { 34.0 + 108.0 };
     // A contextual tab exists only while its object is selected (Excel hides Table Design once the
     // cell leaves the table); a remembered one that is gone would draw an empty ribbon.
     if CONTEXTUAL_TABS.contains(&app.ui.ribbon_tab.as_str()) && !contextual_tabs(app).contains(&app.ui.ribbon_tab.as_str()) {
@@ -285,10 +285,10 @@ pub fn show(app: &mut SheetApp, ui: &mut Ui) {
             let left = ui.cursor().min.x;
             let screen = ui.ctx().content_rect();
             let fits = (screen.right() - left - (left - screen.left()).max(0.0)).max(0.0);
-            let card = Rect::from_min_size(ui.cursor().min, vec2(ui.available_width().min(fits), 88.0));
+            let card = Rect::from_min_size(ui.cursor().min, vec2(ui.available_width().min(fits), 104.0));
             ui.painter().rect_filled(card, 10.0, t.ribbon);
             ui.painter().rect_stroke(card, 10.0, Stroke::new(1.0, t.ribbon_border), StrokeKind::Inside);
-            let inner = card.shrink2(vec2(10.0, 6.0));
+            let inner = card.shrink2(vec2(10.0, 8.0));
             ui.scope_builder(egui::UiBuilder::new().max_rect(inner), |ui| {
                 // One scroll state per tab: a tab opened after scrolling another starts at its
                 // left edge, and a tab keeps its own offset while others are used.

@@ -1166,7 +1166,7 @@ fn home(app: &mut SheetApp, ui: &mut Ui) {
             let (s, sa) = split_button(ui, Icon::Sum, None, "AutoSum");
             control_keytip(app, ui, &sa, "formulas.autoSum");
             if s {
-                act(app, "formulas.autoSum", json!({}));
+                act(app, "formulas.autoSum", json!({"enter": false}));
             }
             egui::Popup::menu(&sa).show(|ui| autosum_menu(app, ui));
         });
@@ -1267,7 +1267,7 @@ fn autosum_menu(app: &mut SheetApp, ui: &mut Ui) {
     for f in ["SUM", "AVERAGE", "COUNT", "MAX", "MIN"] {
         let label = if app.ui.language == crate::i18n::Language::PtBr { match f { "SUM" => "Soma", "AVERAGE" => "Média", "COUNT" => "Contagem", "MAX" => "Máximo", _ => "Mínimo" } } else { f };
         if ui.button(label).clicked() {
-            act(app, "formulas.autoSum", json!({"function": f}));
+            act(app, "formulas.autoSum", json!({"function": f, "enter": false}));
         }
     }
     ui.separator();
@@ -2037,7 +2037,7 @@ fn formulas(app: &mut SheetApp, ui: &mut Ui) {
     let (s, sa) = big_split_button(ui, Icon::Sum, "AutoSum", "AutoSum");
     control_keytip(app, ui, &sa, "formulas.autoSum");
     if s.clicked() {
-        act(app, "formulas.autoSum", json!({}));
+        act(app, "formulas.autoSum", json!({"enter": false}));
     }
     egui::Popup::menu(&sa).show(|ui| autosum_menu(app, ui));
     for (label, cat, cid) in [

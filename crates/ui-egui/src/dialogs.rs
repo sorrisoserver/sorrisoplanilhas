@@ -1437,22 +1437,22 @@ pub fn show(app: &mut SheetApp, ctx: &egui::Context) {
                     }
                 }
                 "saveChanges" => {
-                    ui.label(format!("Do you want to save the changes you made to {}?", d.values.get("title").and_then(Json::as_str).unwrap_or("this workbook")));
+                    ui.label(if crate::i18n::current(ui.ctx()) == crate::i18n::Language::PtBr { format!("Deseja salvar as alterações feitas em {}?", d.values.get("title").and_then(Json::as_str).unwrap_or("esta planilha")) } else { format!("Do you want to save the changes you made to {}?", d.values.get("title").and_then(Json::as_str).unwrap_or("this workbook")) });
                     // Asked while quitting: once answered, the next unsaved workbook is asked about.
                     let quitting = d.values.get("quit").and_then(Json::as_bool) == Some(true);
                     ui.horizontal(|ui| {
-                        if ui.button("Don't Save").clicked() {
+                        if ui.button(if crate::i18n::current(ui.ctx()) == crate::i18n::Language::PtBr { "Não salvar" } else { "Don't Save" }).clicked() {
                             app.run_or_alert("file.close", json!({"force": true}));
                             if quitting {
                                 app.continue_quit(ui.ctx());
                             }
                             open = false;
                         }
-                        if ui.button("Cancel").clicked() {
+                        if ui.button(if crate::i18n::current(ui.ctx()) == crate::i18n::Language::PtBr { "Cancelar" } else { "Cancel" }).clicked() {
                             open = false;
                         }
                         // File operations must include the cell the user is still editing (as the File > Save menu item already does).
-                        if ui.button("Save").clicked() && app.commit_edit(0, 0, false, false) {
+                        if ui.button(if crate::i18n::current(ui.ctx()) == crate::i18n::Language::PtBr { "Salvar" } else { "Save" }).clicked() && app.commit_edit(0, 0, false, false) {
                             app.run_or_alert("file.save", json!({}));
                             if app.session.active().is_some_and(|x| !x.is_dirty()) {
                                 app.run_or_alert("file.close", json!({"force": true}));

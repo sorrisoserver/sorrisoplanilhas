@@ -1018,10 +1018,11 @@ fn home(app: &mut SheetApp, ui: &mut Ui) {
             let (c, ca) = split_button(ui, Icon::Currency, None, "Accounting Number Format");
             control_keytip(app, ui, &ca, "home.accounting");
             if c {
-                act(app, "home.accounting", json!({}));
+                if app.ui.language == crate::i18n::Language::PtBr { act(app, "home.numberFormat", json!({"code": ACCOUNTING_SYMBOLS[9].1})); } else { act(app, "home.accounting", json!({})); }
             }
             egui::Popup::menu(&ca).show(|ui| {
                 let mut items: Vec<_> = ACCOUNTING_SYMBOLS.iter().map(|(label, code)| (*label, "home.numberFormat", json!({"code": code}))).collect();
+                if app.ui.language == crate::i18n::Language::PtBr { let real = items.remove(9); items.insert(0, real); }
                 items.push(("-", "", json!(null)));
                 items.push(("More Accounting Formats…", "dialog:formatCells", json!({"tab": "Number"})));
                 menu_items(app, ui, &items);
@@ -1264,7 +1265,8 @@ fn home(app: &mut SheetApp, ui: &mut Ui) {
 /// Function dialog.
 fn autosum_menu(app: &mut SheetApp, ui: &mut Ui) {
     for f in ["SUM", "AVERAGE", "COUNT", "MAX", "MIN"] {
-        if ui.button(f).clicked() {
+        let label = if app.ui.language == crate::i18n::Language::PtBr { match f { "SUM" => "Soma", "AVERAGE" => "Média", "COUNT" => "Contagem", "MAX" => "Máximo", _ => "Mínimo" } } else { f };
+        if ui.button(label).clicked() {
             act(app, "formulas.autoSum", json!({"function": f}));
         }
     }
